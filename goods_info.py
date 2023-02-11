@@ -70,5 +70,6 @@ with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='ut
         csv_obj.writerow(dict)
         driver.close()
         # 切换回原来的窗口
+        print('切换回商品列表页')
         driver.switch_to.window(original_window)
 
