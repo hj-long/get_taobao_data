@@ -1,9 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
+# 导入动作链模块
+from selenium.webdriver import ActionChains
 import time
 import csv
 import datetime
+
+# 滑块验证
+script = """
+    Object.defineProperties(navigator, 'webdriver', {
+        get: () => undefined
+    })
+"""
 
 
 url = 'https://www.taobao.com/'
@@ -17,8 +26,16 @@ with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='ut
     # 加载配置数据
     c_option = webdriver.ChromeOptions()
     c_option.add_argument(profile_dir)
+    # 实现规避检测
+    c_option.add_argument('--disable-blink-features=AutomationControlled')
     # 启动浏览器并配置
     driver = webdriver.Chrome(chrome_options=c_option)
+
+    # 滑块验证
+    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': script
+    })
+
     driver.get(url)
     # 等待浏览器加载完毕
     driver.implicitly_wait(7)
@@ -47,6 +64,13 @@ with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='ut
         price_list = []
 
         try:
+            # 判断是否有滑块验证
+            if len(driver.find_elements(By.CLASS_NAME, 'nc-lang-cnt')) != 0:
+                print('发现滑块验证')
+                actionSpan()
+                time.sleep(1)
+
+            # 判断是否有商品分类
             if len(goods_box) == 0:
                 box = driver.find_element(By.CLASS_NAME, 'J_TSaleProp')
                 goods_box = box.find_elements(By.TAG_NAME, 'li')
@@ -72,4 +96,19 @@ with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='ut
         # 切换回原来的窗口
         print('切换回商品列表页')
         driver.switch_to.window(original_window)
+    
 
+    # 拖动滑块验证
+    def actionSpan():
+        span = driver.find_element(By.CLASS_NAME, 'nc-lang-cnt')
+        # 实例化动作链对象
+        action = ActionChains(driver)
+        # 点击并按住滑块
+        action.click_and_hold(span).perform()
+        # 拖动滑块
+        action.move_by_offset(300, 0).perform()
+        # 释放鼠标
+        action.release().perform()
+        time.sleep(2)
+
+    driver.quit()
