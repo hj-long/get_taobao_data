@@ -35,3 +35,7 @@ for li in goods_list:
     price = price_div.find_element(By.CLASS_NAME, 'showPricec').text
     sale_sum = price_div.find_element(By.CLASS_NAME, 'sale').text
     print(f'商品名称：{title}, 商品价格：{price}, 销量：{sale_sum}')
+
+
+# 关闭浏览器
+driver.quit()
