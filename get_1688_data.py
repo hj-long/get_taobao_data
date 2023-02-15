@@ -27,7 +27,9 @@ original_window = driver.current_window_handle
 
 # 获取商品信息的列表
 goods_list =  driver.find_element(By.ID, 'sm-offer-list').find_elements(By.CLASS_NAME, 'space-offer-card-box')
-# print(goods_list[0].text)
+print('-----------------')
+print('开始爬取数据，数据长度为：', len(goods_list))
+
 for li in goods_list:
     link = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
     title = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.CLASS_NAME, 'title').text
@@ -37,5 +39,7 @@ for li in goods_list:
     print(f'商品名称：{title}, 商品价格：{price}, 销量：{sale_sum}')
 
 
+print('-----------------')
+print('爬取完毕！')
 # 关闭浏览器
 driver.quit()
