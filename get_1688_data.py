@@ -19,9 +19,6 @@ driver.get(url1)
 # 等待浏览器加载完毕
 driver.implicitly_wait(7)
 
-# 搜索商品
-# search_keyWord = driver.find_element(By.ID, 'home-header-searchbox').send_keys('行星减速器')
-# search_btn = driver.find_element(By.CLASS_NAME, 'home-header-searchbutton').click()
 # 存放原始窗口句柄
 original_window = driver.current_window_handle
 
