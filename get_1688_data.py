@@ -28,6 +28,32 @@ driver.implicitly_wait(7)
 original_window = driver.current_window_handle
 
 
+# 打开链接获取商品信息
+def open_link(link_a, driver):
+    # 点击链接
+    link_a.click()
+    # 等待浏览器加载完毕
+    driver.implicitly_wait(7)
+    # 获取所有窗口句柄
+    all_handles = driver.window_handles
+    # 切换到新窗口
+    for handle in all_handles:
+        if handle != original_window:
+            driver.switch_to.window(handle)
+            break
+    # 获取商品信息
+    goods_div = driver.find_elements(By.XPATH, '//div[@class="offer-attr-list"]/div[@class="offer-attr-item"]')
+    for span in goods_div:
+        name = span.find_element(By.CLASS_NAME, 'offer-attr-item-name').text
+        value = span.find_element(By.CLASS_NAME, 'offer-attr-item-value').text
+        print(f'{name}：{value}')
+    # 关闭当前窗口
+    driver.close()
+    # 切换回原来的窗口
+    driver.switch_to.window(original_window)
+
+
+
 with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='utf-8', newline='') as files:
     # 设置表头并写入csv文件
     csv_obj = csv.DictWriter(files, fieldnames=['商品名称', '商品价格', '销量', '店铺链接'])
@@ -37,7 +63,11 @@ with open(f'./resource/goodsInfo_{datetime.date.today()}.csv', 'w', encoding='ut
     print('-----------------')
     print('开始爬取数据，数据长度为：', len(goods_list))
     for li in goods_list:
-        link = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
+        link_div = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.TAG_NAME, 'a')
+        # 打开店铺获取商品信息
+        open_link(link_div, driver)
+
+        link = link_div.get_attribute('href')
         title = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.CLASS_NAME, 'title').text
         price_div = li.find_element(By.CLASS_NAME, 'mojar-element-price')
         price = price_div.find_element(By.CLASS_NAME, 'showPricec').text
