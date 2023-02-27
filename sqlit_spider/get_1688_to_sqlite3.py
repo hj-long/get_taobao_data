@@ -2,43 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 import time
-import sqlite3
-
-# 创建数据库
-conn = sqlite3.connect(f'spider_1688.db')
-# 创建游标
-cursor = conn.cursor()
-# 创建表,一个是商品信息表(商品名称，价格，销量)，一个是商品具体的详细信息表(都非必填)，两个表之间通过商品ID进行关联
-cursor.execute('create table goods_info \
-    (id integer primary key autoincrement, name varchar(100), company varchar(100)\
-        price varchar(100), sales varchar(100), shop_link varchar(100))')
-
-cursor.execute('create table goods_detail \
-    (id integer primary key autoincrement,\
-            kuajing varchar(100), \
-            zhongliang varchar(100), dinghuo varchar(100)), jiagong varchar(100), \
-            num varchar(100), leibie varchar(100), chilunleibie varchar(100), \
-            anzhuang varchar(100), buju varchar(100), chilunyingdu varchar(100), \
-            yongtu varchar(100), pinpai varchar(100), xinghao varchar(100), \
-            shuru varchar(100), shuchu varchar(100), endinggonglv varchar(100), \
-            niuju varchar(100), fanwei varchar(100), jishu varchar(100), \
-            guige varchar(100), chukou varchar(100), jiansubi varchar(100), \
-            chuangdongbi varchar(100), ADD FOREIGN KEY (id) REFERENCES goods_info(id))')
-conn.commit()
-
-# 建立表哈希表，用于存储商品信息
-detail_name = dict()
-name_map = ["跨境", "单位重量", "订货号", "加工定制", "货号", "类别", "齿轮类型", "安装形式",
-            "布局形式", "齿面硬度", "用途", "品牌", "型号", "输入转速", "输出转速范围",
-            "额定功率", "许用扭矩", "使用范围", "级数", "规格", "是否跨境出口专供货源", "减速比","传动比"
-            ]
-value_map = ["kuajing", "zhongliang", "dinghuo", "jiagong", "num", "leibie", "chilunleibie","anzhuang", 
-            "buju", "chilunyingdu", "yongtu", "pinpai", "xinghao", "shuru", "shuchu",
-            "endinggonglv", "niuju", "fanwei", "jishu", "guige", "chukou", "jiansubi", "chuangdongbi"
-            ]
-
-for i in range(len(name_map)):
-    detail_name[name_map[i]] = value_map[i]
+from sqlite3_model import GoodsInfo, GoodsDetail, session
 
 
 # 行星减速器
