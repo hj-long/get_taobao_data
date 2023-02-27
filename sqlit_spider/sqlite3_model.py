@@ -8,10 +8,13 @@ Base = declarative_base()
 class GoodsInfo(Base):
     __tablename__ = 'goods_info'
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
+    title = Column(String(100))
     price = Column(String(100))
-    url = Column(String(100))
-    detail = relationship('GoodsDetail', backref='goods_info')
+    sale_sum = Column(String(100))
+    link = Column(String(200))
+    
+    def __repr__(self):
+        return "<GoodsInfo(title='%s', price='%s', sale_sum='%s', link='%s')>" % (self.title, self.price, self.sale_sum, self.link)
 
 class GoodsDetail(Base):
     __tablename__ = 'goods_detail'
@@ -39,7 +42,12 @@ class GoodsDetail(Base):
     chukou = Column(String(100), nullable=True)
     jiansubi = Column(String(100), nullable=True)
     chuangdongbi = Column(String(100), nullable=True)
-    info_id = Column(Integer, ForeignKey('goods_info.id'))
+    # 关联goods_info表
+    goods_id = Column(Integer, ForeignKey('goods_info.id'))
+    goods_info = relationship('GoodsInfo', backref='detail')
+
+    def __repr__(self):
+        return "<GoodsInfo(id='%s')>" % (self.id)
 
 # 链接数据库，创建数据库表
 engine = create_engine('sqlite:///spider1688.db', echo=True)

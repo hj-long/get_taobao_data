@@ -2,13 +2,29 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 import time
-from sqlite3_model import GoodsInfo, GoodsDetail, session
+from sqlite3_model import GoodsInfo, GoodsDetail, SessionContext
 
 
 # 行星减速器
 url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=1%2C11%2C16&spm=a260k.dacugeneral.search.0'
 # 硬齿面减速机、行星减速机
 url1 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=1%2C11%2C16&spm=a260k.dacugeneral.search.0&beginPage=1&featurePair=1835%3A44231132%3B3310%3A23539333%3B9112%3A94585628'
+
+
+# 建立表哈希表，用于存储商品信息
+detail_name = dict()
+name_map = ["跨境", "单位重量", "订货号", "加工定制", "货号", "类别", "齿轮类型", "安装形式",
+            "布局形式", "齿面硬度", "用途", "品牌", "型号", "输入转速", "输出转速范围",
+            "额定功率", "许用扭矩", "使用范围", "级数", "规格", "是否跨境出口专供货源", "减速比","传动比"
+            ]
+value_map = ["kuajing", "zhongliang", "dinghuo", "jiagong", "num", "leibie", "chilunleibie","anzhuang", 
+            "buju", "chilunyingdu", "yongtu", "pinpai", "xinghao", "shuru", "shuchu",
+            "endinggonglv", "niuju", "fanwei", "jishu", "guige", "chukou", "jiansubi", "chuangdongbi"
+            ]
+
+for i in range(len(name_map)):
+    detail_name[name_map[i]] = value_map[i]
+
 
 def driver_init():
     # 加载配置数据
@@ -49,9 +65,9 @@ def get_goods_detail(driver, link):
         # 判断是否是需要的数据
         if name in detail_name:
             name = detail_name[name]
-            # 插入数据库
-            cursor.execute('insert into goods_detail (%s) values ("%s")' % (name, value))
-            conn.commit()
+            # 插入数据
+
+          
     print('商品信息获取完毕')
     # 关闭当前窗口
     driver.close()
@@ -73,11 +89,14 @@ def get_goods_info(driver):
         sale_sum = price_div.find_element(By.CLASS_NAME, 'sale').text
         if sale_sum == '':
             sale_sum = '0'
+
+        # 插入数据
+        with SessionContext() as session:
+            session.add(GoodsInfo(title=title, price=price, sale_sum=sale_sum, link=link))
+            session.commit()
+        
         # 调用获取商品详细信息的方法
         get_goods_detail(driver, link)
-        # 插入数据
-        cursor.execute(f'insert into goods_info (name, price, sales, link) values ("{title}", "{price}", "{sale_sum}", "{link}")')
-        conn.commit()
 
 # 程序入口
 if __name__ == '__main__':
