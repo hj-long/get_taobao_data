@@ -55,18 +55,14 @@ def get_goods_detail(driver, link):
             'value': value
         }
         data.append(item)
-        print(f'获取到的标签：{name}, {value}')
-    # 插入数据
-    data = str(data)
-    with SessionContext() as session:
-        session.add(GoodsInfo(detail=data))
 
-    
     print('商品信息获取完毕')
     # 关闭当前窗口
     driver.close()
     # 切换回原来的窗口
     driver.switch_to.window(original_window)
+    # 返回商品详情表的数据字典
+    return str(data)
 
 
 def get_goods_info(driver):
@@ -86,11 +82,13 @@ def get_goods_info(driver):
         print('-----------------')
         print(title, price, sale_sum)
         # 插入数据
-        # with SessionContext() as session:
-        #     session.add(GoodsInfo(title=title, price=price, sale_sum=sale_sum, link=link))
-        
-        # 调用获取商品详细信息的方法
-        get_goods_detail(driver, link)
+        with SessionContext() as session:
+            # 获取商品详细信息
+            detail_data = get_goods_detail(driver, link)
+            # 插入数据
+            goods = GoodsInfo(title=title, price=price, sale_sum=sale_sum, link=link, detail=detail_data)
+            session.add(goods)
+            session.commit()
 
 # 程序入口
 if __name__ == '__main__':
