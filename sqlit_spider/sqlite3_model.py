@@ -12,7 +12,6 @@ class GoodsInfo(Base):
     price = Column(String(100))
     sale_sum = Column(String(100))
     link = Column(String(200))
-    
     def __repr__(self):
         return "<GoodsInfo(title='%s', price='%s', sale_sum='%s', link='%s')>" % (self.title, self.price, self.sale_sum, self.link)
 
@@ -42,9 +41,6 @@ class GoodsDetail(Base):
     chukou = Column(String(100), nullable=True)
     jiansubi = Column(String(100), nullable=True)
     chuangdongbi = Column(String(100), nullable=True)
-    # 关联goods_info表
-    goods_id = Column(Integer, ForeignKey('goods_info.id'))
-    goods_info = relationship('GoodsInfo', backref='detail')
 
     def __repr__(self):
         return "<GoodsInfo(id='%s')>" % (self.id)
