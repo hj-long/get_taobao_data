@@ -48,7 +48,7 @@ class GoodsInfo(Base):
 #         return "<GoodsInfo(id='%s')>" % (self.id)
 
 # 链接数据库，创建数据库表
-engine = create_engine('sqlite:///spider1688.db', echo=True)
+engine = create_engine('sqlite:///spider1688_1.db', echo=True)
 Base.metadata.create_all(engine)
 # 创建会话
 Session = sessionmaker(bind=engine)

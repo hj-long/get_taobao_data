@@ -16,53 +16,86 @@ def driver_init():
     # 加载配置数据
     profile_dir = r'--user-data-dir=C:\Users\hjl\AppData\Local\Google\Chrome\User Data'
     c_option = webdriver.ChromeOptions()
+    c_option.add_experimental_option('useAutomationExtension', False)
+    c_option.add_experimental_option('excludeSwitches', ['enable-automation'])
+
+    prefs = {
+        'profile.default_content_setting_values':
+            {
+                'notifications': 2
+            },
+        'profile.password_manager_enabled': False,
+        'credentials_enable_service': False
+    }
+    c_option.add_experimental_option('prefs', prefs)
+
+    # 开发者模式防止被识别出
+    # 网址：https://blog.csdn.net/dslkfajoaijfdoj/article/details/109146051
+    c_option.add_experimental_option('excludeSwitches', ['enable-automation'])
+    c_option.add_argument("--disable-blink-features=AutomationControlled")
+    # c_option.add_experimental_option('w3c', False)
+
     c_option.add_argument(profile_dir)
-    c_option.add_argument('--ignore-certificate-errors-spki-list')
-    c_option.add_argument('--ignore-ssl-errors')
     driver = webdriver.Chrome(chrome_options=c_option)
+    # 执行cdp命令
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": """
+                                Object.defineProperty(navigator, 'webdriver', {
+                                  get: () => undefined
+                                })
+                              """
+    })
+
     return driver
 
 # 打开链接获取商品的详细信息
 def get_goods_detail(driver, link):
-    # 打开新窗口
-    driver.execute_script("window.open('"+link+"')")
-    # 等待浏览器加载完毕
-    driver.implicitly_wait(7)
-    # 获取所有窗口句柄
-    all_handles = driver.window_handles
-    # 切换到新窗口
-    for handle in all_handles:
-        if handle != original_window:
-            driver.switch_to.window(handle)
-            break
-    time.sleep(2)
-    # 先点击展开按钮
-    try:
-        driver.find_element(By.CLASS_NAME, 'offer-attr-switch').click()
-    except:
-        pass
-    time.sleep(1)
-    # 获取商品信息
-    goods_div = driver.find_elements(By.XPATH, '//div[@class="offer-attr-list"]/div[@class="offer-attr-item"]')
-    print('-----------------')
-    # 定义商品详情表的数据字典
-    data = []
-    for span in goods_div:
-        name = span.find_element(By.CLASS_NAME, 'offer-attr-item-name').text.strip()
-        value = span.find_element(By.CLASS_NAME, 'offer-attr-item-value').text.strip()
-        item = {
-            'name': name,
-            'value': value
-        }
-        data.append(item)
+    
+    while True:
+        try:
+            # 打开新窗口
+            driver.execute_script("window.open('"+link+"')")
+            # 等待浏览器加载完毕
+            driver.implicitly_wait(7)
+            # 获取所有窗口句柄
+            all_handles = driver.window_handles
+            # 切换到新窗口
+            for handle in all_handles:
+                if handle != original_window:
+                    driver.switch_to.window(handle)
+                    break
+            time.sleep(2)
+            # 先点击展开按钮
+            try:
+                driver.find_element(By.CLASS_NAME, 'offer-attr-switch').click()
+            except:
+                pass
+            time.sleep(1)
+            # 获取商品信息
+            goods_div = driver.find_elements(By.XPATH, '//div[@class="offer-attr-list"]/div[@class="offer-attr-item"]')
+            print('-----------------')
+            # 定义商品详情表的数据字典
+            data = []
+            for span in goods_div:
+                name = span.find_element(By.CLASS_NAME, 'offer-attr-item-name').text.strip()
+                value = span.find_element(By.CLASS_NAME, 'offer-attr-item-value').text.strip()
+                item = {
+                    'name': name,
+                    'value': value
+                }
+                data.append(item)
 
-    print('商品信息获取完毕')
-    # 关闭当前窗口
-    driver.close()
-    # 切换回原来的窗口
-    driver.switch_to.window(original_window)
-    # 返回商品详情表的数据字典
-    return str(data)
+            print('商品信息获取完毕')
+            # 关闭当前窗口
+            driver.close()
+            # 切换回原来的窗口
+            driver.switch_to.window(original_window)
+            # 返回商品详情表的数据字典
+            return str(data)
+        
+        except:
+            input('请手动滑动滑块，然后按回车键继续')
+            continue
 
 
 def get_goods_info(driver):
