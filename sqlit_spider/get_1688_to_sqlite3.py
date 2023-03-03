@@ -40,10 +40,10 @@ def driver_init():
     # 执行cdp命令
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
-                                Object.defineProperty(navigator, 'webdriver', {
-                                  get: () => undefined
-                                })
-                              """
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    })
+                  """
     })
 
     return driver
