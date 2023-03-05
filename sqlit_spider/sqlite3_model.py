@@ -14,6 +14,7 @@ class GoodsInfo(Base):
     link = Column(String(200))
     # 保存商品详情信息的字典
     detail = Column(String(1000))
+    address = Column(String(200))
     def __repr__(self):
         return "<GoodsInfo(title='%s', price='%s', sale_sum='%s', link='%s')>" % (self.title, self.price, self.sale_sum, self.link, self.detail)
 
