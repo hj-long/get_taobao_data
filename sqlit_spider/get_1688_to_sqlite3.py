@@ -73,6 +73,9 @@ def get_goods_detail(driver, link):
             time.sleep(1)
             # 获取商品信息
             goods_div = driver.find_elements(By.XPATH, '//div[@class="offer-attr-list"]/div[@class="offer-attr-item"]')
+            # 获取地址信息
+            # address_div = driver.find_element(By.XPATH, '//div[@id="shop-container-footer"]//div[@style="text-align: center;"]/p')
+            
             print('-----------------')
             # 定义商品详情表的数据字典
             data = []
