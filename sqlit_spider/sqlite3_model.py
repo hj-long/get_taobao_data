@@ -15,6 +15,8 @@ class GoodsInfo(Base):
     # 保存商品详情信息的字典
     detail = Column(String(1000))
     address = Column(String(200))
+    # 厂家名称
+    factory_name = Column(String(100))
     def __repr__(self):
         return "<GoodsInfo(title='%s', price='%s', sale_sum='%s', link='%s')>" % (self.title, self.price, self.sale_sum, self.link, self.detail)
 
@@ -49,7 +51,7 @@ class GoodsInfo(Base):
 #         return "<GoodsInfo(id='%s')>" % (self.id)
 
 # 链接数据库，创建数据库表
-engine = create_engine('sqlite:///spider1688_1.db', echo=True)
+engine = create_engine('sqlite:///spider1688_3.db', echo=True)
 Base.metadata.create_all(engine)
 # 创建会话
 Session = sessionmaker(bind=engine)

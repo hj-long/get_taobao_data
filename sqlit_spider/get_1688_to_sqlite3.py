@@ -74,7 +74,11 @@ def get_goods_detail(driver, link):
             # 获取商品信息
             goods_div = driver.find_elements(By.XPATH, '//div[@class="offer-attr-list"]/div[@class="offer-attr-item"]')
             # 获取地址信息
-            # address_div = driver.find_element(By.XPATH, '//div[@id="shop-container-footer"]//div[@style="text-align: center;"]/p')
+            address_div = driver.find_element(By.XPATH, '//div[@id="shop-container-footer"]//div[@style="text-align: center;"]/p')
+            # 获取厂家名称
+            factory_name = address_div.find_elements(By.TAG_NAME, 'span')[0].text
+            address = address_div.find_elements(By.TAG_NAME, 'span')[1].text.replace('地址：', '')
+            print(factory_name, address)
             
             print('-----------------')
             # 定义商品详情表的数据字典
@@ -94,10 +98,14 @@ def get_goods_detail(driver, link):
             # 切换回原来的窗口
             driver.switch_to.window(original_window)
             # 返回商品详情表的数据字典
-            return str(data)
+            return (str(data), address, factory_name)
         
         except:
-            input('请手动滑动滑块，然后按回车键继续')
+            # 手动滑动验证码
+            msg = input('请手动滑动验证码，输入任意字符继续：')
+            # 如果按下了esc键，退出程序
+            if str(msg) == '0':
+                exit()
             continue
 
 
@@ -120,9 +128,9 @@ def get_goods_info(driver):
         # 插入数据
         with SessionContext() as session:
             # 获取商品详细信息
-            detail_data = get_goods_detail(driver, link)
+            detail_data, address, factory_name = get_goods_detail(driver, link)
             # 插入数据
-            goods = GoodsInfo(title=title, price=price, sale_sum=sale_sum, link=link, detail=detail_data)
+            goods = GoodsInfo(title=title, price=price, sale_sum=sale_sum, link=link, detail=detail_data, address=address, factory_name=factory_name)
             session.add(goods)
             session.commit()
 
@@ -130,18 +138,32 @@ def get_goods_info(driver):
 if __name__ == '__main__':
     driver = driver_init()
     driver.implicitly_wait(3)
+    
     # 打开链接获取商品信息
     driver.get(url)
     # 睡眠3秒，等待浏览器加载完毕
     time.sleep(3)
-    # 获取当前窗口句柄
-    original_window = driver.current_window_handle
-    # 慢慢向下滚动
-    for i in range(1, 10):
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(1)
-    # 获取商品信息
-    get_goods_info(driver) 
+
+    # 循环爬取40页数据
+    for i in range(40):
+        print(f'-----------------第{i+1}页-----------------')
+        # 等待浏览器加载完毕
+        driver.implicitly_wait(7)
+        # 获取当前窗口句柄
+        original_window = driver.current_window_handle
+        # 获取下一页的按钮
+        next_btn = driver.find_element(By.CLASS_NAME, 'fui-next')
+        # 慢慢向下滚动
+        for i in range(1, 10):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)
+        # 获取商品信息
+        get_goods_info(driver)
+        # 点击下一页
+        try:
+           next_btn.click()
+        except:
+            break
 
 
 print('-----------------')

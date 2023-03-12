@@ -16,15 +16,16 @@ import time
 # time.sleep(2)
 
 # # 查询数据(修改数据)
-with SessionContext() as session: 
-    # 查询数据
-    detail = session.query(GoodsInfo).filter(GoodsInfo.id == 1).first().detail
-    print(detail)
-    print(type(detail))
-    # 转换为list
-    d1 = eval(detail)
-    print(d1[0], d1[1].get('name'))
-    print(type(d1))
+# with SessionContext() as session: 
+#     # 查询数据
+#     detail = session.query(GoodsInfo).filter(GoodsInfo.id == 1).first().detail
+#     print(detail)
+#     print(type(detail))
+#     # 转换为list
+#     d1 = eval(detail)
+#     print(d1[0], d1[1].get('name'))
+#     print(type(d1))
+
 
 
 # data = {
