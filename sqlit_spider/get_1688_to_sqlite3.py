@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ChromeOptions
+from selenium.webdriver import ChromeOptions,ActionChains
 import time
 from sqlite3_model import GoodsInfo, SessionContext
 
@@ -13,7 +13,7 @@ url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5
 url1 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&spm=a26352.13672862.searchbox.input'
 # 当前页（断了之后）
 # url5 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=16&spm=a260k.dacugeneral.search.0&beginPage=5#sm-filtbar'
-now_url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=16&spm=a260k.dacugeneral.search.0&beginPage=24#sm-filtbar'
+now_url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7%B5%E7%BB%FA&spm=a26352.13672862.searchbox.input'
 
 
 def driver_init():
@@ -160,14 +160,17 @@ if __name__ == '__main__':
         next_btn = driver.find_element(By.CLASS_NAME, 'fui-next')
         time.sleep(1)
         # 慢慢向下滚动
-        for i in range(1, 5):
+        for i in range(1, 3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(1)
         # 再慢慢向上滚动
-        for i in range(1, 5):
+        for i in range(1, 3):
             driver.execute_script("window.scrollTo(0, 0);")
             time.sleep(1)
-        
+        # 滑动鼠标到页面中部
+        ActionChains(driver).move_by_offset(0, 300).perform()
+        time.sleep(1)
+
         # 获取商品信息
         get_goods_info(driver)
         # 点击下一页
