@@ -11,6 +11,10 @@ url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5
 # url1 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=1%2C11%2C16&spm=a260k.dacugeneral.search.0&beginPage=1&featurePair=1835%3A44231132%3B3310%3A23539333%3B9112%3A94585628'
 
 url1 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&spm=a26352.13672862.searchbox.input'
+# 当前页（断了之后）
+# url5 = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=16&spm=a260k.dacugeneral.search.0&beginPage=5#sm-filtbar'
+now_url = 'https://s.1688.com/selloffer/offer_search.htm?keywords=%D0%D0%D0%C7%BC%F5%CB%D9%C6%F7&n=y&netType=16&spm=a260k.dacugeneral.search.0&beginPage=24#sm-filtbar'
+
 
 def driver_init():
     # 加载配置数据
@@ -102,10 +106,11 @@ def get_goods_detail(driver, link):
         
         except:
             # 手动滑动验证码
-            msg = input('请手动滑动验证码，输入任意字符继续：')
-            # 如果按下了esc键，退出程序
-            if str(msg) == '0':
-                exit()
+            # msg = input('请手动滑动验证码，输入任意字符继续：')
+            # # 如果按下了esc键，退出程序
+            # if str(msg) == '0':
+            #     exit()
+            input('请手动滑动验证码，输入任意字符继续：')
             continue
 
 
@@ -140,7 +145,7 @@ if __name__ == '__main__':
     driver.implicitly_wait(3)
     
     # 打开链接获取商品信息
-    driver.get(url)
+    driver.get(now_url)
     # 睡眠3秒，等待浏览器加载完毕
     time.sleep(3)
 
@@ -153,10 +158,16 @@ if __name__ == '__main__':
         original_window = driver.current_window_handle
         # 获取下一页的按钮
         next_btn = driver.find_element(By.CLASS_NAME, 'fui-next')
+        time.sleep(1)
         # 慢慢向下滚动
-        for i in range(1, 10):
+        for i in range(1, 5):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(1)
+        # 再慢慢向上滚动
+        for i in range(1, 5):
+            driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(1)
+        
         # 获取商品信息
         get_goods_info(driver)
         # 点击下一页
