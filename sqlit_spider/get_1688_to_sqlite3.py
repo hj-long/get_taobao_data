@@ -105,11 +105,7 @@ def get_goods_detail(driver, link):
             return (str(data), address, factory_name)
         
         except:
-            # 手动滑动验证码
-            # msg = input('请手动滑动验证码，输入任意字符继续：')
-            # # 如果按下了esc键，退出程序
-            # if str(msg) == '0':
-            #     exit()
+            # 手动处理滑动验证
             input('请手动滑动验证码，输入任意字符继续：')
             continue
 
