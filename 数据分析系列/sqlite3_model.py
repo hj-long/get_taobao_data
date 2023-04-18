@@ -64,7 +64,7 @@ class GoodsDetail(Base):
         return "<GoodsInfo(type='%s')>" % (self.type)
     
 # 链接数据库，创建数据库表
-engine = create_engine('sqlite:///spider_1688_1.db', echo=True)
+engine = create_engine('sqlite:///spider_1688_2.db', echo=True)
 Base.metadata.create_all(engine)
 # 创建会话
 Session = sessionmaker(bind=engine)

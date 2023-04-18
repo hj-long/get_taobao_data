@@ -265,7 +265,6 @@ if __name__ == '__main__':
         # 滑动鼠标到页面中部
         ActionChains(driver).move_by_offset(0, 300).perform()
         time.sleep(1)
-
         # 获取商品信息
         get_goods_info(driver)
         # 点击下一页
