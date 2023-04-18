@@ -6,7 +6,17 @@ from sqlite3_model import GoodsInfo, SessionContext, GoodsDetail
 import re
 
 # JZQ 系列减速器
-url = 'https://s.1688.com/selloffer/imall_search.htm?keywords=JZQ+%D4%B2%D6%F9%B3%DD%C2%D6%BC%F5%CB%D9%BB%FA&spm=a26352.22885112.searchbox.input'
+# url = 'https://s.1688.com/selloffer/imall_search.htm?keywords=JZQ+%D4%B2%D6%F9%B3%DD%C2%D6%BC%F5%CB%D9%BB%FA&spm=a26352.22885112.searchbox.input'
+# 158条，断了重新爬取
+# url1 = 'https://s.1688.com/selloffer/imall_search.htm?keywords=JZQ+%D4%B2%D6%F9%B3%DD%C2%D6%BC%F5%CB%D9%BB%FA&spm=a26352.22885112.searchbox.input&beginPage=4#sm-filtbar'
+# 279条，断了重新爬取
+# url1 = 'https://s.1688.com/selloffer/imall_search.htm?keywords=JZQ+%D4%B2%D6%F9%B3%DD%C2%D6%BC%F5%CB%D9%BB%FA&spm=a26352.22885112.searchbox.input&beginPage=7#sm-filtbar'
+# 329条，又jiba断了，重新爬取， 352条重新回7页爬到399条
+# url1 = 'https://s.1688.com/selloffer/imall_search.htm?keywords=JZQ+%D4%B2%D6%F9%B3%DD%C2%D6%BC%F5%CB%D9%BB%FA&spm=a26352.22885112.searchbox.input&beginPage=8#sm-filtbar'
+
+# NGW 系列减速器(记得改商品信息过滤判断条件为NGW),674断了，重新爬取
+url1 = 'https://s.1688.com/selloffer/imall_search.htm?keywords=NGW&spm=&featurePair=1835%3A44231132&beginPage=7#sm-filtbar'
+
 
 # 初始化浏览器
 def driver_init():
@@ -53,14 +63,24 @@ def get_goods_info(driver):
         link_div = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.TAG_NAME, 'a')
         link = link_div.get_attribute('href')
         title = li.find_element(By.CLASS_NAME, 'mojar-element-title').find_element(By.CLASS_NAME, 'title').text
+
         # 过滤掉不是JZQ系列的商品
-        if 'ZQ' not in title:
+        # if 'ZQ' not in title:
+        #     continue
+
+        # 过滤掉不是NGW系列的商品
+        if 'NGW' not in title:
             continue
-        price_div = li.find_element(By.CLASS_NAME, 'mojar-element-price')
-        price = price_div.find_element(By.CLASS_NAME, 'showPricec').text
-        sale_sum = price_div.find_element(By.CLASS_NAME, 'sale').text
-        if sale_sum == '':
-            sale_sum = '0'
+
+        try:
+            # 这个地方容易报错，所以用try，不知道为什么，有毒
+            price_div = li.find_element(By.CLASS_NAME, 'mojar-element-price')
+            price = price_div.find_element(By.CLASS_NAME, 'showPricec').text
+            sale_sum = price_div.find_element(By.CLASS_NAME, 'sale').text
+            if sale_sum == '':
+                sale_sum = '0'
+        except:
+            continue
         print('-----------------')
         print(title, price, sale_sum)
         # 插入数据
@@ -111,24 +131,24 @@ def get_goods_detail(driver, link):
                 name = span.find_element(By.CLASS_NAME, 'offer-attr-item-name').text.strip()
                 value = span.find_element(By.CLASS_NAME, 'offer-attr-item-value').text.strip()
                 # 如果是 输入转速、输出转速、额定功率、许用扭矩，需要转换为数字
-                # if name in ['输入转速', '输出转速', '额定功率', '许用扭矩']:
-                #     value = handle_value(value)
-                # if name == '级数':
-                #     # 如果能转换为数字，说明是数字，否则是文字
-                #     try:
-                #         float(value)
-                #     except:
-                #         # 如果是 多级，转为2，单级转为1
-                #         if '多' in value:
-                #             value = '2'
-                #         elif '单' in value or '一' in value or '1' in value:
-                #             value = '1'
-                #         elif '二' in value or '2' in value or '两' in value or '双' in value:
-                #             value = '2'
-                #         elif '三' in value or '3' in value:
-                #             value = '3'
-                #         elif '四' in value or '4' in value:
-                #             value = '4'
+                if name in ['输入转速', '输出转速范围', '额定功率', '许用扭矩']:
+                    value = handle_value(value)
+                if name == '级数':
+                    # 如果能转换为数字，说明是数字，否则是文字
+                    try:
+                        float(value)
+                    except:
+                        # 如果是 多级，转为2，单级转为1
+                        if '多' in value:
+                            value = '2'
+                        elif '单' in value or '一' in value or '1' in value:
+                            value = '1'
+                        elif '二' in value or '2' in value or '两' in value or '双' in value:
+                            value = '2'
+                        elif '三' in value or '3' in value:
+                            value = '3'
+                        elif '四' in value or '4' in value:
+                            value = '4'
                 item = {
                     'name': name,
                     'value': value
@@ -147,44 +167,6 @@ def get_goods_detail(driver, link):
             # 手动处理滑动验证
             input('请手动滑动验证码，输入任意字符继续：')
             continue
-
-# 程序入口
-if __name__ == '__main__':
-    driver = driver_init()
-    driver.implicitly_wait(3)  
-    # 打开链接获取商品信息
-    driver.get(url)
-    # 睡眠3秒，等待浏览器加载完毕
-    time.sleep(3)
-    # 循环爬取40页数据
-    for i in range(40):
-        print(f'-----------------第{i+1}页-----------------')
-        # 等待浏览器加载完毕
-        driver.implicitly_wait(7)
-        # 获取当前窗口句柄
-        original_window = driver.current_window_handle
-        # 获取下一页的按钮
-        next_btn = driver.find_element(By.CLASS_NAME, 'fui-next')
-        time.sleep(1)
-        # 慢慢向下滚动
-        for i in range(1, 3):
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1)
-        # 再慢慢向上滚动
-        for i in range(1, 3):
-            driver.execute_script("window.scrollTo(0, 0);")
-            time.sleep(1)
-        # 滑动鼠标到页面中部
-        ActionChains(driver).move_by_offset(0, 300).perform()
-        time.sleep(1)
-
-        # 获取商品信息
-        get_goods_info(driver)
-        # 点击下一页
-        try:
-           next_btn.click()
-        except:
-            break
 
 # 处理字段值中存在的特殊字符、单位、空格、范围值等
 def handle_value(value):
@@ -254,4 +236,40 @@ def value_arr(arr):
         value = arr[0]
     return value
 
-    
+# 程序入口
+if __name__ == '__main__':
+    driver = driver_init()
+    driver.implicitly_wait(3)  
+    # 打开链接获取商品信息
+    driver.get(url1)
+    # 睡眠1秒，等待浏览器加载完毕
+    time.sleep(2)
+    # 循环爬取40页数据
+    for i in range(40):
+        print(f'-----------------第{i+1}页-----------------')
+        # 等待浏览器加载完毕
+        driver.implicitly_wait(7)
+        # 获取当前窗口句柄
+        original_window = driver.current_window_handle
+        # 获取下一页的按钮
+        next_btn = driver.find_element(By.CLASS_NAME, 'fui-next')
+        time.sleep(1)
+        # 慢慢向下滚动
+        for i in range(1, 3):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)
+        # 再慢慢向上滚动
+        for i in range(1, 3):
+            driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(1)
+        # 滑动鼠标到页面中部
+        ActionChains(driver).move_by_offset(0, 300).perform()
+        time.sleep(1)
+
+        # 获取商品信息
+        get_goods_info(driver)
+        # 点击下一页
+        try:
+           next_btn.click()
+        except:
+            break
