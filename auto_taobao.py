@@ -22,8 +22,8 @@ with open(f'./resource/taobao_{datetime.date.today()}.csv', 'w', encoding='utf-8
     driver.get(url)
     # 等待浏览器加载完毕
     driver.implicitly_wait(7)
-
-
+    
+    # 这里需要手动填写你需要搜索的商品名！我这里是行星减速器~
     search_keyWord = driver.find_element(By.ID, 'q').send_keys('行星减速器')
     search_btn = driver.find_element(By.CLASS_NAME, 'btn-search').click()
 
