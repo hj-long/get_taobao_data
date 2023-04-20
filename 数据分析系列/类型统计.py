@@ -23,77 +23,45 @@ def type_count(item, flag):
     return 'other'
 
 
-# 从GoodsDetail取出399-819条数据
+# 从GoodsDetail取出399条数据
 with SessionContext() as session:
-    data = session.query(GoodsDetail).filter(GoodsDetail.id >= 399, GoodsDetail.id <= 819).all()
+    # data = session.query(GoodsDetail).filter(GoodsDetail.id >= 399, GoodsDetail.id <= 819).all()
+    data = session.query(GoodsDetail).filter(GoodsDetail.id >= 1, GoodsDetail.id <= 399).all()
     # 统计类别(jzq100跟jzq1000重复了，手动统计)
-    # type_item = {
-    #         'JZQ100': 1,
-    #         'JZQ175': 0,
-    #         'JZQ200': 0,
-    #         'JZQ250': 0,
-    #         'JZQ350': 0,
-    #         'JZQ400': 0,
-    #         'JZQ500': 0,
-    #         'JZQ650': 0,
-    #         'JZQ750': 0,
-    #         'JZQ850': 0,
-    #         'JZQ1000': 0,
-    #         'other': 0,
-    #         'None': 0
-    #     } 
-
-    # 统计类别
     type_item = {
-            'NGW11': 2,
-            'NGW21': 0,
-            'NGW31': 0,
-            'NGW41': 0,
-            'NGW42': 0,
-            'NGW51': 0,
-            'NGW52': 0,
-            'NGW61': 0,
-            'NGW62': 0,
-            'NGW63': 0,
-            'NGW71': 0,
-            'NGW72': 0,
-            'NGW73': 0,
-            'NGW81': 0,
-            'NGW82': 0,
-            'NGW83': 0,
-            'NGW91': 0,
-            'NGW92': 0,
-            'NGW93': 0,
-            'NGW101': 0,
-            'NGW102': 0,
-            'NGW103': 0,
-            'NGW111': 0,
-            'NGW112': 0,
-            'NGW113': 0,
-            'NGW114': 0,
-            'NGW121': 0,
-            'NGW122': 0,
-            'NGW123': 0,
-            'NGW132': 0,
-            'NGW160': 0,
-            'NGW180': 0,
-            'NGW200': 0,
-            'NGW225': 0,
-            'NGW250': 0,
+            'JZQ100': 1,
+            'JZQ175': 0,
+            'JZQ200': 0,
+            'JZQ250': 0,
+            'JZQ350': 0,
+            'JZQ400': 0,
+            'JZQ500': 0,
+            'JZQ650': 0,
+            'JZQ750': 0,
+            'JZQ850': 0,
+            'JZQ1000': 0,
             'other': 0,
             'None': 0
-        }
+        } 
+
+    # 统计类别
+    # type_item = {
+    #         'NGW11': 2,'NGW21': 0,'NGW31': 0,'NGW41': 0,'NGW42': 0,'NGW51': 0,'NGW52': 0,'NGW61': 0,'NGW62': 0,'NGW63': 0,'NGW71': 0,
+    #         'NGW72': 0,'NGW73': 0,'NGW81': 0,'NGW82': 0,'NGW83': 0,'NGW91': 0,'NGW92': 0,'NGW93': 0,'NGW101': 0,'NGW102': 0,'NGW103': 0,
+    #         'NGW111': 0,'NGW112': 0,'NGW113': 0,'NGW114': 0,'NGW121': 0,'NGW122': 0,'NGW123': 0,'NGW132': 0,'NGW160': 0,'NGW180': 0,
+    #         'NGW200': 0,'NGW225': 0,'NGW250': 0,'other': 0,'None': 0
+    #     }
 
     for item in data:
         if item.type_num is not None:
-            # type_item[type_count(item.type_num, 1)] += 1
-            type_item[type_count(item.type_num, 2)] += 1
+            type_item[type_count(item.type_num, 1)] += 1
+            # type_item[type_count(item.type_num, 2)] += 1
         elif item.orders_goods is not None:
-            # type_item[type_count(item.orders_goods, 1)] += 1
-            type_item[type_count(item.orders_goods, 2)] += 1
+            type_item[type_count(item.orders_goods, 1)] += 1
+            # type_item[type_count(item.orders_goods, 2)] += 1
         elif item.num is not None:
-            # type_item[type_count(item.num, 1)] += 1
-            type_item[type_count(item.num, 2)] += 1
+            type_item[type_count(item.num, 1)] += 1
+            # type_item[type_count(item.num, 2)] += 1
         else:
             type_item['None'] += 1
 

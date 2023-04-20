@@ -1,5 +1,4 @@
 import wordcloud
-import wordcloud
 import matplotlib.pyplot as plt
 from sqlite3_model import SessionContext, GoodsDetail
 import jieba
