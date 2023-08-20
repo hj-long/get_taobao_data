@@ -1,5 +1,7 @@
 *** selenium 网络爬虫1688、淘宝网站 ***
 
+**注意** 使用selenium爬虫需要下载对应的浏览器驱动，点击下载[chrome浏览器驱动](https://chromedriver.storage.googleapis.com/index.html)，[详细教程](https://juejin.cn/post/7223390625881571385)
+
 ### 淘宝网站：
 
 auto_taobao.py 是使用 selenium 框架直接操纵浏览器进行数据爬取,
